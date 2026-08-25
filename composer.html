@@ -753,20 +753,19 @@
             }
         }
 
-        /* COMPOSING LOADING VIEW SECTION */
+        /* COMPOSING VIEW (LOADING & DETAILS) */
         .composing-view {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            z-index: 40;
+            z-index: 30;
             display: flex;
-            flex-direction: column;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.6s ease;
-            background-color: #fff;
+            background-color: transparent;
         }
 
         .composing-view.active {
@@ -774,47 +773,123 @@
             pointer-events: auto;
         }
 
-        .composing-content {
-            flex: 1;
+        /* Two absolute wrappers for Text to allow isolated animations */
+        .loading-text-wrapper {
+            position: absolute;
+            left: 48px; top: 50%; transform: translateY(-50%);
+            width: 40%;
+            pointer-events: none;
+        }
+        .details-text-wrapper {
+            position: absolute;
+            left: 48px; top: 50%; transform: translateY(-50%);
+            width: 42%;
+            pointer-events: none;
+        }
+
+        .phase-loading .loading-text-wrapper { pointer-events: auto; }
+        .phase-details .details-text-wrapper { pointer-events: auto; }
+
+        /* Animatable Image Container */
+        #compImgCol {
+            position: absolute;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
-            align-items: center;
             justify-content: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            gap: 64px;
-        }
-
-        .composing-text-col {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-
-        .composing-img-col {
-            flex: 1;
-            display: flex;
-            justify-content: center;
             align-items: center;
-            height: 440px;
         }
 
+        /* Desktop Image States */
+        .phase-loading #compImgCol {
+            left: 70%; top: 50%;
+            transform: translate(-50%, -50%);
+            width: 50%; height: 440px;
+        }
+        .phase-details #compImgCol {
+            left: 75%; top: 50%;
+            transform: translate(-50%, -50%) scale(1.15);
+            width: 50%; height: 500px;
+        }
+
+        /* Loading Typography */
         .composing-small-title {
             font-size: 15px;
             font-weight: 500;
             color: var(--bno-black);
             letter-spacing: 0.2px;
         }
-
         .composing-main-text {
             font-size: 40px;
             font-weight: 400;
             line-height: 1.4;
             color: var(--bno-black);
             letter-spacing: -0.5px;
+            margin-top: 24px;
         }
 
+        /* Final Details Typography */
+        .det-title {
+            font-size: 44px;
+            font-weight: 400;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            color: var(--bno-black);
+            margin: 16px 0 24px 0;
+        }
+        .det-price {
+            font-size: 13px;
+            color: var(--bno-grey);
+            margin-bottom: 20px;
+        }
+        .det-link {
+            font-size: 13px;
+            text-decoration: underline;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 48px;
+            color: var(--bno-black);
+            text-underline-offset: 4px;
+            transition: opacity 0.2s ease;
+        }
+        .det-link:hover { opacity: 0.7; }
+
+        /* Action Button Pocket */
+        .action-buttons-pocket {
+            overflow: hidden; /* The pocket mask */
+            padding-bottom: 12px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .action-buttons-container {
+            display: flex;
+            gap: 16px;
+            transform: translateY(120%);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .action-buttons-container.enter {
+            transform: translateY(0);
+        }
+        .bno-btn-dark {
+            background: var(--bno-black); color: #fff;
+            border: 1px solid var(--bno-black);
+            border-radius: 99px; padding: 14px 32px;
+            font-size: 15px; font-weight: 500;
+            flex: 1; display: inline-flex; justify-content: center; cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .bno-btn-dark:hover { opacity: 0.8; }
+        .bno-btn-light {
+            background: #fff; color: var(--bno-black);
+            border: 1px solid var(--bno-black);
+            border-radius: 99px; padding: 14px 32px;
+            font-size: 15px; font-weight: 500;
+            flex: 1; display: inline-flex; justify-content: center; cursor: pointer;
+            transition: background 0.2s;
+        }
+        .bno-btn-light:hover { background: #f0f0f0; }
+
+        /* Footers */
         .composing-footer {
             position: absolute;
             bottom: 40px;
@@ -824,35 +899,38 @@
             justify-content: center;
             align-items: center;
             gap: 24px;
+            transition: opacity 0.5s ease;
         }
-
         .progress-track {
-            width: 280px;
-            height: 2px;
+            width: 280px; height: 2px;
             background-color: var(--bno-light-grey);
-            position: relative;
-            overflow: hidden;
+            position: relative; overflow: hidden;
         }
-
         .progress-fill {
-            position: absolute;
-            top: 0; left: 0;
-            height: 100%;
-            width: 0%;
+            position: absolute; top: 0; left: 0;
+            height: 100%; width: 0%;
             background-color: var(--bno-black);
         }
-
         .skip-btn {
-            background: none;
-            border: none;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.18em;
-            color: var(--bno-black);
-            cursor: pointer;
-            padding: 8px;
+            background: none; border: none;
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 0.18em; color: var(--bno-black);
+            cursor: pointer; padding: 8px;
+        }
+        .inspire-me-footer {
+            position: absolute;
+            bottom: 32px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            font-size: 12px; font-weight: 500; color: var(--bno-black);
+            opacity: 0; pointer-events: none; transition: opacity 0.6s ease;
+        }
+        .inspire-me-footer.enter {
+            opacity: 1; pointer-events: auto;
         }
 
+        /* Hide Loader Footer appropriately */
+        .phase-details .composing-footer { opacity: 0; pointer-events: none; }
+        
         .fade-in-up {
             opacity: 0;
             transform: translateY(24px);
@@ -865,40 +943,37 @@
         }
 
         @media (max-width: 768px) {
-            .composing-content {
-                flex-direction: column;
-                text-align: center;
-                padding: 0 24px;
-                gap: 0;
-                margin-top: 60px;
+            .loading-text-wrapper {
+                left: 50%; top: 30%; transform: translate(-50%, -50%);
+                width: 85%; text-align: center;
             }
-            .composing-text-col {
-                text-align: center;
-                align-items: center;
-                flex: 0;
+            .details-text-wrapper {
+                left: 24px; top: 35%; transform: translateY(-50%);
+                width: 85%; text-align: left;
             }
-            .composing-small-title {
-                font-size: 12px;
-                margin-bottom: 24px;
+            .phase-loading .loading-text-wrapper { transform: translate(-50%, -50%); }
+            .phase-details .details-text-wrapper { transform: translateY(-50%); }
+
+            .composing-small-title { font-size: 13px; margin-bottom: 8px; }
+            .composing-main-text { font-size: 22px; line-height: 1.4; margin-top: 16px; width: 100%; }
+
+            .det-title { font-size: 32px; margin: 12px 0 16px 0; }
+            .action-buttons-pocket { max-width: 100%; margin-top: 24px; }
+            .action-buttons-container { flex-direction: column; gap: 12px; }
+            .bno-btn-dark, .bno-btn-light { width: 100%; }
+            .det-link { margin-bottom: 24px; }
+
+            .phase-loading #compImgCol {
+                left: 50%; top: 70%;
+                transform: translate(-50%, -50%);
+                width: 100%; height: 300px;
             }
-            .composing-main-text {
-                font-size: 18px;
-                line-height: 28px;
-                        width: 70vw;
+            .phase-details #compImgCol {
+                left: 80%; top: 75%;
+                transform: translate(-50%, -50%) scale(1.3);
+                width: 90%; height: 350px;
             }
-            .composing-img-col {
-                height: 300px;
-            }
-            .composing-footer {
-                gap: 16px;
-                padding: 0 24px;
-            }
-            .progress-track {
-                width: 140px;
-            }
-            .text-mask-container:nth-child(2) {
-    margin-top: 0 !important;
-}
+            .progress-track { width: 160px; }
         }
 
         /* Keyframe Animations */
@@ -1092,33 +1167,68 @@
             </div>
         </div>
 
-        <!-- VIEW 3: COMPOSING LOADING PAGE -->
+        <!-- VIEW 3: COMPOSING LOADING PAGE & DETAILS -->
         <div class="composing-view" id="composingView">
-            <div class="composing-content">
-                <div class="composing-text-col">
-                    <div class="text-mask-container">
-                        <div class="composing-small-title text-animatable anim-prepare-down" id="compSmallTitle">
-                            Beolab 8. Great choice. Did you know?
-                        </div>
-                    </div>
-                    <div class="text-mask-container" style="margin-top: 24px;">
-                        <div class="composing-main-text text-animatable anim-prepare-down" id="compMainText">
-                            Versatile by design, Beolab 8 is standalone, stereo and surround sound speaker &ndash; all in one.
-                        </div>
+            <!-- Wrapper 1: Loading Text -->
+            <div class="loading-text-wrapper">
+                <div class="text-mask-container">
+                    <div class="composing-small-title text-animatable anim-prepare-down" id="compSmallTitle">
+                        Beolab 8. Great choice. Did you know?
                     </div>
                 </div>
-                <div class="composing-img-col">
-                    <div id="compBlueprintContainer" class="w-full h-full flex items-center justify-center fade-in-up">
-                        <!-- SVG injected here -->
+                <div class="text-mask-container">
+                    <div class="composing-main-text text-animatable anim-prepare-down" id="compMainText">
+                        Versatile by design, Beolab 8 is standalone, stereo and surround sound speaker &ndash; all in one.
                     </div>
                 </div>
             </div>
 
-            <div class="composing-footer">
+            <!-- Wrapper 2: Final Details Text -->
+            <div class="details-text-wrapper">
+                <div class="text-mask-container">
+                    <div class="product-tag text-animatable anim-prepare-down" id="detTag">BEOVISION THEATRE</div>
+                </div>
+                <div class="text-mask-container">
+                    <h1 class="det-title text-animatable anim-prepare-down" id="detTitle">Cinematic home theatre excellence</h1>
+                </div>
+                <div class="text-mask-container">
+                    <div class="det-price text-animatable anim-prepare-down" id="detPrice">Est. total 22,051 USD</div>
+                </div>
+                
+                <div class="text-mask-container">
+                    <a href="#" class="det-link interactive-element text-animatable anim-prepare-down" id="detLink">
+                        <span>View product page</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                    </a>
+                </div>
+
+                <div class="action-buttons-pocket interactive-element">
+                    <div class="action-buttons-container" id="detActionBtns">
+                        <button class="bno-btn-dark">Compose</button>
+                        <button class="bno-btn-light">Quick compose</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shared Animatable Image Column -->
+            <div id="compImgCol">
+                <div id="compBlueprintContainer" class="w-full h-full flex items-center justify-center fade-in-up">
+                    <!-- SVG injected here -->
+                </div>
+            </div>
+
+            <!-- Loader Line & Skip (Loading phase) -->
+            <div class="composing-footer" id="compFooter">
                 <div class="progress-track">
                     <div class="progress-fill" id="compProgressFill"></div>
                 </div>
                 <button class="skip-btn interactive-element" id="skipCompBtn">SKIP</button>
+            </div>
+
+            <!-- Inspire Me (Details phase) -->
+            <div class="inspire-me-footer interactive-element" id="inspireFooter">
+                <span>Inspire me</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
         </div>
 
@@ -1579,47 +1689,75 @@
             const compBlueprintContainer = document.getElementById('compBlueprintContainer');
             const compProgressFill = document.getElementById('compProgressFill');
             const skipCompBtn = document.getElementById('skipCompBtn');
+            const detTag = document.getElementById('detTag');
+            const detTitle = document.getElementById('detTitle');
+            const detPrice = document.getElementById('detPrice');
+            const detActionBtns = document.getElementById('detActionBtns');
+            const inspireFooter = document.getElementById('inspireFooter');
+            const mainHeaderNav = document.querySelector('.header-nav');
 
             // Start Composing Button Action
             startComposingBtn.addEventListener('click', () => {
                 const product = PRODUCTS_DATA[currentProductIndex];
                 
-                // Populate text
+                // Populate Loading text
                 compSmallTitle.textContent = `${product.name}. Great choice. Did you know?`;
                 compMainText.innerHTML = `Versatile by design, ${product.name} is standalone, stereo and surround sound speaker &ndash; all in one.`;
                 
+                // Populate Details text
+                detTag.textContent = product.tag;
+                detTitle.textContent = product.title;
+                let priceRaw = product.price.replace('From ', '').replace(' / set', '');
+                detPrice.textContent = `Est. total ${priceRaw}`;
+
                 // Populate image (SVG)
                 compBlueprintContainer.innerHTML = product.svg;
                 const svg = compBlueprintContainer.querySelector('.product-blueprint-svg');
                 if(svg) {
-                    // Start it fully rendered without rotation transition
                     svg.classList.add('rendered');
                     svg.style.transition = 'none'; 
                     svg.style.transform = 'scale(1) translateY(0)';
                     svg.style.opacity = '1';
                 }
 
-                // Hide selection view
+                // Hide selection view entirely so lines show through
                 selectionView.classList.remove('active');
+                selectionView.style.opacity = '0';
                 
-                // Show composing view
+                // Hide Nav during loading phase smoothly
+                mainHeaderNav.style.transition = 'opacity 0.4s ease';
+                mainHeaderNav.style.opacity = '0';
+                mainHeaderNav.style.pointerEvents = 'none';
+                
+                // Show composing view in Loading Phase
                 composingView.classList.add('active');
+                composingView.classList.add('phase-loading');
+                composingView.classList.remove('phase-details');
 
                 // Reset animations
                 compProgressFill.style.transition = 'none';
                 compProgressFill.style.width = '0%';
                 
-                const textElements = composingView.querySelectorAll('.text-animatable');
-                textElements.forEach(el => {
+                detActionBtns.classList.remove('enter');
+                inspireFooter.classList.remove('enter');
+
+                const loadingTextElements = [compSmallTitle, compMainText];
+                loadingTextElements.forEach(el => {
+                    el.classList.remove('anim-enter-up', 'anim-exit-up');
+                    el.classList.add('anim-prepare-down');
+                });
+                
+                const detailsTextElements = document.querySelectorAll('.details-text-wrapper .text-animatable');
+                detailsTextElements.forEach(el => {
                     el.classList.remove('anim-enter-up', 'anim-exit-up');
                     el.classList.add('anim-prepare-down');
                 });
 
                 compBlueprintContainer.classList.remove('visible');
 
-                // Trigger entry animations
+                // Trigger entry animations for Loading Phase
                 setTimeout(() => {
-                    textElements.forEach((el, idx) => {
+                    loadingTextElements.forEach((el, idx) => {
                         el.style.transitionDelay = `${idx * 0.15}s`;
                         el.classList.remove('anim-prepare-down');
                         el.classList.add('anim-enter-up');
@@ -1627,20 +1765,56 @@
                     
                     compBlueprintContainer.classList.add('visible');
 
-                    // Start progress bar fill over 5 seconds
+                    // Start progress bar fill over 4 seconds
                     setTimeout(() => {
-                        compProgressFill.style.transition = 'width 5s linear';
+                        compProgressFill.style.transition = 'width 4s linear';
                         compProgressFill.style.width = '100%';
                     }, 100);
 
-                }, 400); // Wait for transition
+                    // Wait 4s then Transition to DETAILS Phase
+                    setTimeout(() => {
+                        // 1. Send Loading text away using text masking ceiling
+                        loadingTextElements.forEach((el, idx) => {
+                            el.style.transitionDelay = '0s'; // Fast exit
+                            el.classList.remove('anim-enter-up');
+                            el.classList.add('anim-exit-up');
+                        });
+
+                        // 2. Change Layout Phase (Triggers image move/zoom)
+                        composingView.classList.remove('phase-loading');
+                        composingView.classList.add('phase-details');
+
+                        // 3. Show Nav again!
+                        mainHeaderNav.style.opacity = '1';
+                        mainHeaderNav.style.pointerEvents = 'auto';
+
+                        // 4. Bring Details text up from floor mask
+                        setTimeout(() => {
+                            detailsTextElements.forEach((el, idx) => {
+                                el.style.transitionDelay = `${idx * 0.12}s`;
+                                el.classList.remove('anim-prepare-down');
+                                el.classList.add('anim-enter-up');
+                            });
+                            // Slide buttons up from pocket
+                            setTimeout(() => {
+                                detActionBtns.classList.add('enter');
+                                inspireFooter.classList.add('enter');
+                            }, 300);
+                        }, 400);
+
+                    }, 4100); // Wait for loader
+
+                }, 400); 
             });
 
             // Skip Composing action
             skipCompBtn.addEventListener('click', () => {
-                 // For now, return to selection view
+                 // Cancel and return to selection
                  composingView.classList.remove('active');
+                 selectionView.style.opacity = '1';
                  selectionView.classList.add('active');
+                 mainHeaderNav.style.opacity = '1';
+                 mainHeaderNav.style.pointerEvents = 'auto';
                  compProgressFill.style.transition = 'none';
                  compProgressFill.style.width = '0%';
             });
