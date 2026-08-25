@@ -773,22 +773,13 @@
             pointer-events: auto;
         }
 
-        /* Two absolute wrappers for Text to allow isolated animations */
-        .loading-text-wrapper {
-            position: absolute;
-            left: 48px; top: 50%; transform: translateY(-50%);
-            width: 40%;
-            pointer-events: none;
-        }
+        /* Wrapper for Final Details Text */
         .details-text-wrapper {
             position: absolute;
             left: 48px; top: 50%; transform: translateY(-50%);
             width: 42%;
-            pointer-events: none;
+            pointer-events: auto;
         }
-
-        .phase-loading .loading-text-wrapper { pointer-events: auto; }
-        .phase-details .details-text-wrapper { pointer-events: auto; }
 
         /* Animatable Image Container */
         #compImgCol {
@@ -797,52 +788,34 @@
             display: flex;
             justify-content: center;
             align-items: center;
-        }
-
-        /* Desktop Image States */
-        .phase-loading #compImgCol {
-            left: 70%; top: 50%;
-            transform: translate(-50%, -50%);
-            width: 50%; height: 440px;
-        }
-        .phase-details #compImgCol {
             left: 75%; top: 50%;
             transform: translate(-50%, -50%) scale(1.15);
             width: 50%; height: 500px;
         }
 
-        /* Loading Typography */
-        .composing-small-title {
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--bno-black);
-            letter-spacing: 0.2px;
-        }
-        .composing-main-text {
-            font-size: 40px;
-            font-weight: 400;
-            line-height: 1.4;
-            color: var(--bno-black);
-            letter-spacing: -0.5px;
-            margin-top: 24px;
-        }
-
         /* Final Details Typography */
         .det-title {
-            font-size: 44px;
-            font-weight: 400;
+            font-size: 18px;
+            font-weight: 500;
             line-height: 1.2;
-            letter-spacing: -0.5px;
+            letter-spacing: -0.2px;
             color: var(--bno-black);
             margin: 16px 0 24px 0;
         }
         .det-price {
-            font-size: 13px;
+            font-size: 10px;
             color: var(--bno-grey);
             margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+        .product-tag {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            color: var(--bno-grey);
         }
         .det-link {
-            font-size: 13px;
+            font-size: 10px;
             text-decoration: underline;
             display: inline-flex;
             align-items: center;
@@ -851,6 +824,7 @@
             color: var(--bno-black);
             text-underline-offset: 4px;
             transition: opacity 0.2s ease;
+            letter-spacing: 0.5px;
         }
         .det-link:hover { opacity: 0.7; }
 
@@ -873,21 +847,33 @@
         .bno-btn-dark {
             background: var(--bno-black); color: #fff;
             border: 1px solid var(--bno-black);
-            border-radius: 99px; padding: 14px 32px;
+            border-radius: 9999px; padding: 12px 36px;
             font-size: 15px; font-weight: 500;
-            flex: 1; display: inline-flex; justify-content: center; cursor: pointer;
-            transition: opacity 0.2s;
+            flex: 1; display: inline-flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .bno-btn-dark:hover { opacity: 0.8; }
+        .bno-btn-dark:hover { 
+            background: #fff; 
+            color: var(--bno-black); 
+            border-color: var(--bno-black); 
+        }
         .bno-btn-light {
             background: #fff; color: var(--bno-black);
             border: 1px solid var(--bno-black);
-            border-radius: 99px; padding: 14px 32px;
+            border-radius: 9999px; padding: 12px 36px;
             font-size: 15px; font-weight: 500;
-            flex: 1; display: inline-flex; justify-content: center; cursor: pointer;
-            transition: background 0.2s;
+            flex: 1; display: inline-flex; justify-content: center; align-items: center; cursor: pointer;
+            transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .bno-btn-light:hover { background: #f0f0f0; }
+        .bno-btn-light:hover { 
+            background: var(--bno-black); 
+            color: #fff; 
+            border-color: var(--bno-black); 
+        }
 
         /* Footers */
         .composing-footer {
@@ -943,37 +929,32 @@
         }
 
         @media (max-width: 768px) {
-            .loading-text-wrapper {
-                left: 50%; top: 30%; transform: translate(-50%, -50%);
-                width: 85%; text-align: center;
-            }
             .details-text-wrapper {
-                left: 24px; top: 35%; transform: translateY(-50%);
-                width: 85%; text-align: left;
+                left: 24px; top: 110px; transform: none;
+                width: calc(100% - 48px); text-align: left;
             }
-            .phase-loading .loading-text-wrapper { transform: translate(-50%, -50%); }
-            .phase-details .details-text-wrapper { transform: translateY(-50%); }
 
-            .composing-small-title { font-size: 13px; margin-bottom: 8px; }
-            .composing-main-text { font-size: 22px; line-height: 1.4; margin-top: 16px; width: 100%; }
-
-            .det-title { font-size: 32px; margin: 12px 0 16px 0; }
-            .action-buttons-pocket { max-width: 100%; margin-top: 24px; }
+            .det-title { font-size: 18px; margin: 8px 0 16px 0; }
+            
+            .action-buttons-pocket { 
+                position: fixed; 
+                bottom: 80px; 
+                left: 50%; 
+                transform: translateX(-50%); 
+                width: calc(100% - 48px); 
+                margin: 0; 
+                max-width: 100%;
+            }
             .action-buttons-container { flex-direction: column; gap: 12px; }
             .bno-btn-dark, .bno-btn-light { width: 100%; }
+            .bno-btn-light { border: none !important; }
             .det-link { margin-bottom: 24px; }
 
-            .phase-loading #compImgCol {
-                left: 50%; top: 70%;
-                transform: translate(-50%, -50%);
-                width: 100%; height: 300px;
+            #compImgCol {
+                left: 100%; top: 55%;
+                transform: translate(-65%, -50%) scale(1.6);
+                width: 100%; height: 400px;
             }
-            .phase-details #compImgCol {
-                left: 80%; top: 75%;
-                transform: translate(-50%, -50%) scale(1.3);
-                width: 90%; height: 350px;
-            }
-            .progress-track { width: 160px; }
         }
 
         /* Keyframe Animations */
@@ -1167,23 +1148,10 @@
             </div>
         </div>
 
-        <!-- VIEW 3: COMPOSING LOADING PAGE & DETAILS -->
+        <!-- VIEW 3: COMPOSING VIEW (DETAILS ONLY) -->
         <div class="composing-view" id="composingView">
-            <!-- Wrapper 1: Loading Text -->
-            <div class="loading-text-wrapper">
-                <div class="text-mask-container">
-                    <div class="composing-small-title text-animatable anim-prepare-down" id="compSmallTitle">
-                        Beolab 8. Great choice. Did you know?
-                    </div>
-                </div>
-                <div class="text-mask-container">
-                    <div class="composing-main-text text-animatable anim-prepare-down" id="compMainText">
-                        Versatile by design, Beolab 8 is standalone, stereo and surround sound speaker &ndash; all in one.
-                    </div>
-                </div>
-            </div>
-
-            <!-- Wrapper 2: Final Details Text -->
+            
+            <!-- Final Details Text -->
             <div class="details-text-wrapper">
                 <div class="text-mask-container">
                     <div class="product-tag text-animatable anim-prepare-down" id="detTag">BEOVISION THEATRE</div>
@@ -1210,19 +1178,11 @@
                 </div>
             </div>
 
-            <!-- Shared Animatable Image Column -->
+            <!-- Image Column -->
             <div id="compImgCol">
-                <div id="compBlueprintContainer" class="w-full h-full flex items-center justify-center fade-in-up">
+                <div id="compBlueprintContainer" class="w-full h-full flex items-center justify-center fade-in-up visible">
                     <!-- SVG injected here -->
                 </div>
-            </div>
-
-            <!-- Loader Line & Skip (Loading phase) -->
-            <div class="composing-footer" id="compFooter">
-                <div class="progress-track">
-                    <div class="progress-fill" id="compProgressFill"></div>
-                </div>
-                <button class="skip-btn interactive-element" id="skipCompBtn">SKIP</button>
             </div>
 
             <!-- Inspire Me (Details phase) -->
@@ -1684,11 +1644,7 @@
 
             // View Cache for Composing
             const composingView = document.getElementById('composingView');
-            const compSmallTitle = document.getElementById('compSmallTitle');
-            const compMainText = document.getElementById('compMainText');
             const compBlueprintContainer = document.getElementById('compBlueprintContainer');
-            const compProgressFill = document.getElementById('compProgressFill');
-            const skipCompBtn = document.getElementById('skipCompBtn');
             const detTag = document.getElementById('detTag');
             const detTitle = document.getElementById('detTitle');
             const detPrice = document.getElementById('detPrice');
@@ -1699,10 +1655,6 @@
             // Start Composing Button Action
             startComposingBtn.addEventListener('click', () => {
                 const product = PRODUCTS_DATA[currentProductIndex];
-                
-                // Populate Loading text
-                compSmallTitle.textContent = `${product.name}. Great choice. Did you know?`;
-                compMainText.innerHTML = `Versatile by design, ${product.name} is standalone, stereo and surround sound speaker &ndash; all in one.`;
                 
                 // Populate Details text
                 detTag.textContent = product.tag;
@@ -1720,103 +1672,56 @@
                     svg.style.opacity = '1';
                 }
 
-                // Hide selection view entirely so lines show through
+                // Hide selection view cleanly
                 selectionView.classList.remove('active');
-                selectionView.style.opacity = '0';
+                setTimeout(() => {
+                    selectionView.style.display = 'none';
+                }, 600);
                 
-                // Hide Nav during loading phase smoothly
-                mainHeaderNav.style.transition = 'opacity 0.4s ease';
-                mainHeaderNav.style.opacity = '0';
-                mainHeaderNav.style.pointerEvents = 'none';
-                
-                // Show composing view in Loading Phase
+                // Show composing view immediately in details state
                 composingView.classList.add('active');
-                composingView.classList.add('phase-loading');
-                composingView.classList.remove('phase-details');
 
-                // Reset animations
-                compProgressFill.style.transition = 'none';
-                compProgressFill.style.width = '0%';
-                
+                // Prepare animations
                 detActionBtns.classList.remove('enter');
                 inspireFooter.classList.remove('enter');
+                compBlueprintContainer.classList.remove('visible');
 
-                const loadingTextElements = [compSmallTitle, compMainText];
-                loadingTextElements.forEach(el => {
-                    el.classList.remove('anim-enter-up', 'anim-exit-up');
-                    el.classList.add('anim-prepare-down');
-                });
-                
                 const detailsTextElements = document.querySelectorAll('.details-text-wrapper .text-animatable');
                 detailsTextElements.forEach(el => {
                     el.classList.remove('anim-enter-up', 'anim-exit-up');
                     el.classList.add('anim-prepare-down');
                 });
 
-                compBlueprintContainer.classList.remove('visible');
-
-                // Trigger entry animations for Loading Phase
+                // Trigger entry animations for Details Phase
                 setTimeout(() => {
-                    loadingTextElements.forEach((el, idx) => {
-                        el.style.transitionDelay = `${idx * 0.15}s`;
+                    compBlueprintContainer.classList.add('visible');
+                    
+                    detailsTextElements.forEach((el, idx) => {
+                        el.style.transitionDelay = `${idx * 0.12}s`;
                         el.classList.remove('anim-prepare-down');
                         el.classList.add('anim-enter-up');
                     });
                     
-                    compBlueprintContainer.classList.add('visible');
-
-                    // Start progress bar fill over 4 seconds
+                    // Slide buttons up from pocket
                     setTimeout(() => {
-                        compProgressFill.style.transition = 'width 4s linear';
-                        compProgressFill.style.width = '100%';
-                    }, 100);
+                        detActionBtns.classList.add('enter');
+                        inspireFooter.classList.add('enter');
+                    }, 300);
 
-                    // Wait 4s then Transition to DETAILS Phase
-                    setTimeout(() => {
-                        // 1. Send Loading text away using text masking ceiling
-                        loadingTextElements.forEach((el, idx) => {
-                            el.style.transitionDelay = '0s'; // Fast exit
-                            el.classList.remove('anim-enter-up');
-                            el.classList.add('anim-exit-up');
-                        });
-
-                        // 2. Change Layout Phase (Triggers image move/zoom)
-                        composingView.classList.remove('phase-loading');
-                        composingView.classList.add('phase-details');
-
-                        // 3. Show Nav again!
-                        mainHeaderNav.style.opacity = '1';
-                        mainHeaderNav.style.pointerEvents = 'auto';
-
-                        // 4. Bring Details text up from floor mask
-                        setTimeout(() => {
-                            detailsTextElements.forEach((el, idx) => {
-                                el.style.transitionDelay = `${idx * 0.12}s`;
-                                el.classList.remove('anim-prepare-down');
-                                el.classList.add('anim-enter-up');
-                            });
-                            // Slide buttons up from pocket
-                            setTimeout(() => {
-                                detActionBtns.classList.add('enter');
-                                inspireFooter.classList.add('enter');
-                            }, 300);
-                        }, 400);
-
-                    }, 4100); // Wait for loader
-
-                }, 400); 
+                }, 100); 
             });
 
-            // Skip Composing action
-            skipCompBtn.addEventListener('click', () => {
-                 // Cancel and return to selection
-                 composingView.classList.remove('active');
-                 selectionView.style.opacity = '1';
-                 selectionView.classList.add('active');
-                 mainHeaderNav.style.opacity = '1';
-                 mainHeaderNav.style.pointerEvents = 'auto';
-                 compProgressFill.style.transition = 'none';
-                 compProgressFill.style.width = '0%';
+            // Back from composing (optional but helpful if user hits back nav)
+            mainHeaderNav.addEventListener('click', (e) => {
+                if (composingView.classList.contains('active')) {
+                     composingView.classList.remove('active');
+                     
+                     // Restore selection view
+                     selectionView.style.display = 'flex';
+                     setTimeout(() => {
+                         selectionView.classList.add('active');
+                     }, 50);
+                }
             });
         });
     </script>
