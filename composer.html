@@ -753,6 +753,154 @@
             }
         }
 
+        /* COMPOSING LOADING VIEW SECTION */
+        .composing-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            background-color: #fff;
+        }
+
+        .composing-view.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .composing-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            gap: 64px;
+        }
+
+        .composing-text-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .composing-img-col {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 440px;
+        }
+
+        .composing-small-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--bno-black);
+            letter-spacing: 0.2px;
+        }
+
+        .composing-main-text {
+            font-size: 40px;
+            font-weight: 400;
+            line-height: 1.4;
+            color: var(--bno-black);
+            letter-spacing: -0.5px;
+        }
+
+        .composing-footer {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .progress-track {
+            width: 280px;
+            height: 2px;
+            background-color: var(--bno-light-grey);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: 0%;
+            background-color: var(--bno-black);
+        }
+
+        .skip-btn {
+            background: none;
+            border: none;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            color: var(--bno-black);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .composing-content {
+                flex-direction: column;
+                text-align: center;
+                padding: 0 24px;
+                gap: 0;
+                margin-top: 60px;
+            }
+            .composing-text-col {
+                text-align: center;
+                align-items: center;
+                flex: 0;
+            }
+            .composing-small-title {
+                font-size: 12px;
+                margin-bottom: 24px;
+            }
+            .composing-main-text {
+                font-size: 18px;
+                line-height: 28px;
+                        width: 70vw;
+            }
+            .composing-img-col {
+                height: 300px;
+            }
+            .composing-footer {
+                gap: 16px;
+                padding: 0 24px;
+            }
+            .progress-track {
+                width: 140px;
+            }
+            .text-mask-container:nth-child(2) {
+    margin-top: 0 !important;
+}
+        }
+
         /* Keyframe Animations */
         @keyframes slowSlideUp {
             0% {
@@ -941,6 +1089,36 @@
                         Start composing
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: COMPOSING LOADING PAGE -->
+        <div class="composing-view" id="composingView">
+            <div class="composing-content">
+                <div class="composing-text-col">
+                    <div class="text-mask-container">
+                        <div class="composing-small-title text-animatable anim-prepare-down" id="compSmallTitle">
+                            Beolab 8. Great choice. Did you know?
+                        </div>
+                    </div>
+                    <div class="text-mask-container" style="margin-top: 24px;">
+                        <div class="composing-main-text text-animatable anim-prepare-down" id="compMainText">
+                            Versatile by design, Beolab 8 is standalone, stereo and surround sound speaker &ndash; all in one.
+                        </div>
+                    </div>
+                </div>
+                <div class="composing-img-col">
+                    <div id="compBlueprintContainer" class="w-full h-full flex items-center justify-center fade-in-up">
+                        <!-- SVG injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="composing-footer">
+                <div class="progress-track">
+                    <div class="progress-fill" id="compProgressFill"></div>
+                </div>
+                <button class="skip-btn interactive-element" id="skipCompBtn">SKIP</button>
             </div>
         </div>
 
@@ -1394,9 +1572,77 @@
                 selectProduct(nextIdx);
             });
 
+            // View Cache for Composing
+            const composingView = document.getElementById('composingView');
+            const compSmallTitle = document.getElementById('compSmallTitle');
+            const compMainText = document.getElementById('compMainText');
+            const compBlueprintContainer = document.getElementById('compBlueprintContainer');
+            const compProgressFill = document.getElementById('compProgressFill');
+            const skipCompBtn = document.getElementById('skipCompBtn');
+
             // Start Composing Button Action
             startComposingBtn.addEventListener('click', () => {
-                console.log('Composing initialized for:', PRODUCTS_DATA[currentProductIndex].name);
+                const product = PRODUCTS_DATA[currentProductIndex];
+                
+                // Populate text
+                compSmallTitle.textContent = `${product.name}. Great choice. Did you know?`;
+                compMainText.innerHTML = `Versatile by design, ${product.name} is standalone, stereo and surround sound speaker &ndash; all in one.`;
+                
+                // Populate image (SVG)
+                compBlueprintContainer.innerHTML = product.svg;
+                const svg = compBlueprintContainer.querySelector('.product-blueprint-svg');
+                if(svg) {
+                    // Start it fully rendered without rotation transition
+                    svg.classList.add('rendered');
+                    svg.style.transition = 'none'; 
+                    svg.style.transform = 'scale(1) translateY(0)';
+                    svg.style.opacity = '1';
+                }
+
+                // Hide selection view
+                selectionView.classList.remove('active');
+                
+                // Show composing view
+                composingView.classList.add('active');
+
+                // Reset animations
+                compProgressFill.style.transition = 'none';
+                compProgressFill.style.width = '0%';
+                
+                const textElements = composingView.querySelectorAll('.text-animatable');
+                textElements.forEach(el => {
+                    el.classList.remove('anim-enter-up', 'anim-exit-up');
+                    el.classList.add('anim-prepare-down');
+                });
+
+                compBlueprintContainer.classList.remove('visible');
+
+                // Trigger entry animations
+                setTimeout(() => {
+                    textElements.forEach((el, idx) => {
+                        el.style.transitionDelay = `${idx * 0.15}s`;
+                        el.classList.remove('anim-prepare-down');
+                        el.classList.add('anim-enter-up');
+                    });
+                    
+                    compBlueprintContainer.classList.add('visible');
+
+                    // Start progress bar fill over 5 seconds
+                    setTimeout(() => {
+                        compProgressFill.style.transition = 'width 5s linear';
+                        compProgressFill.style.width = '100%';
+                    }, 100);
+
+                }, 400); // Wait for transition
+            });
+
+            // Skip Composing action
+            skipCompBtn.addEventListener('click', () => {
+                 // For now, return to selection view
+                 composingView.classList.remove('active');
+                 selectionView.classList.add('active');
+                 compProgressFill.style.transition = 'none';
+                 compProgressFill.style.width = '0%';
             });
         });
     </script>
