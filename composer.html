@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bang & Olufsen - The Composer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        @font-face {
+            font-family: 'BeoSupreme';
+            src: local('BeoSupreme'), local('Inter'), sans-serif;
+            font-display: swap;
+        }
+
+        :root {
+            --bno-black: #191817;
+            --bno-light: #fbfbfb;
+            --bno-grey: #8e8d8a;
+            --bno-light-grey: #e5e5e5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow-x: hidden;
+            background-color: var(--bno-light);
+            color: var(--bno-black);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* App Wrapper for view transitions */
+        .app-container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            background-color: var(--bno-light);
+        }
+
+        /* Subtle Background Architectural Grid Lines */
+        .grid-lines-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .grid-line {
+            height: 100%;
+            width: 1px;
+            background-color: rgba(25, 24, 23, 0.04);
+        }
+
+        /* Video Background Styling */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            background-color: #fafafa;
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .video-bg {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .video-bg {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+
+        /* Fixed Navigation Header across views */
+        .header-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 40;
+            padding: 32px 48px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .header-nav {
+                padding: 24px 20px;
+            }
+        }
+
+        .interactive-element {
+            pointer-events: auto;
+        }
+
+        /* Left Back Link */
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--bno-black);
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: -0.1px;
+            transition: opacity 0.2s ease;
+            cursor: pointer;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        .back-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid rgba(25, 24, 23, 0.12);
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        @media (max-width: 768px) {
+            .back-circle {
+                width: 44px;
+                height: 44px;
+                background-color: #ffffff;
+                border: 1px solid rgba(0, 0, 0, 0.05);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            }
+        }
+
+        /* Brand Title */
+        .brand-title {
+            font-size: 15px;
+            font-weight: 500;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--bno-black);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .brand-title {
+                font-size: 13px;
+                letter-spacing: 0.16em;
+            }
+        }
+
+        /* User Account Icon & Tooltip Container */
+        .account-wrapper {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-self: end;
+        }
+
+        .account-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            color: var(--bno-black);
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .account-tooltip {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 6px;
+            font-size: 12px;
+            font-weight: 400;
+            color: #191817;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+            pointer-events: none;
+        }
+
+        .account-wrapper:hover .account-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* LANDING PAGE SECTION */
+        .landing-view {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .middle-spacer {
+            flex-grow: 1;
+            min-height: 100px;
+        }
+
+        /* Landing Content Container */
+        .content-container {
+            padding-bottom: 56px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .content-container {
+                padding-bottom: 48px;
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+
+        /* Title Animation and Styling */
+        .composer-title {
+            font-size: 48px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 64px;
+            letter-spacing: -0.5px;
+            color: var(--bno-black);
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        .animate-title-in {
+            animation: slowSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+        }
+
+        @media (max-width: 768px) {
+            .composer-title {
+                font-size: 40px;
+                line-height: 52px;
+            }
+        }
+
+        /* Subtitle Styling */
+        .composer-subtitle {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            color: var(--bno-black);
+            margin-top: 8px;
+            margin-bottom: 32px;
+            opacity: 0;
+            transform: translateY(20px);
+            max-width: 420px;
+        }
+
+        .animate-subtitle-in {
+            animation: slowSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+        }
+
+        @media (max-width: 768px) {
+            .composer-subtitle {
+                font-size: 15px;
+                line-height: 22px;
+                margin-bottom: 28px;
+                max-width: 290px;
+            }
+        }
+
+        /* Pill Buttons & Hover Effects */
+        .btn-wrapper {
+            opacity: 0;
+            transform: scale(0.65);
+        }
+
+        .animate-btn-in {
+            animation: growPill 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+        }
+
+        .bno-pill-btn {
+            background-color: #191817;
+            color: #ffffff;
+            border: 1px solid #191817;
+            border-radius: 9999px;
+            padding: 12px 36px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                        color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .bno-pill-btn:hover {
+            background-color: #ffffff;
+            color: #191817;
+            border-color: #191817;
+        }
+
+        /* Exit Animation for Landing View Elements */
+        .animate-exit-up {
+            animation: slowSlideUpExit 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+        }
+
+        /* PRODUCT SELECTION VIEW SECTION */
+        .selection-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 20;
+            padding-top: 100px;
+            padding-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            overflow-y: auto;
+        }
+
+        .selection-view.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Top Heading inside Selection View */
+        .selection-header-title {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 400;
+            color: #191817;
+            letter-spacing: -0.1px;
+            margin-bottom: 24px;
+            opacity: 0;
+            transform: translateY(16px);
+        }
+
+        .selection-header-title.animate-in {
+            animation: slowSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+        }
+
+        /* Main Grid Content for Desktop Selection */
+        .selection-main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 340px;
+            height: calc(100vh - 220px);
+            width: 100%;
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 48px;
+            align-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .selection-main-grid {
+                grid-template-columns: 220px 1fr 280px;
+                padding: 0 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .selection-main-grid {
+                display: flex;
+                flex-direction: column;
+                height: auto;
+                padding: 0 20px 80px 20px;
+                justify-content: center;
+            }
+        }
+
+        /* Custom Left Sidebar Navigation Container */
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            text-align: left;
+            margin-left: 3.06vw; /* Custom Left Margin as specified */
+        }
+
+        @media (max-width: 768px) {
+            .sidebar-nav {
+                display: none; /* Mobile uses chevron navigation */
+            }
+        }
+
+        .category-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Sidebar Product Section Titles (eg: SPEAKERS) */
+        .category-label {
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 24px;
+            letter-spacing: 1.7px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            color: var(--bno-black);
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        /* Unordered List for Products */
+        .product-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Product List Item Elements */
+        .product-list-item {
+            list-style: none;
+            margin: 0;
+            padding-left: 1.11vw; /* Offset horizontally so not on the same vertical line */
+            padding-bottom: 2.67svh;
+        }
+
+        /* Product Item Button */
+        .product-item-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            font-family: 'BeoSupreme', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: 26px;
+            letter-spacing: 0.2px;
+            color: var(--bno-grey);
+            cursor: pointer;
+            padding: 0;
+            transition: color 0.3s ease, font-weight 0.2s ease;
+            opacity: 0;
+            transform: translateX(-100px);
+            outline: none;
+            display: block;
+            width: 100%;
+        }
+
+        .product-item-btn:hover {
+            color: var(--bno-black);
+        }
+
+        .product-item-btn.active {
+            color: var(--bno-black);
+            font-weight: 600;
+        }
+
+        /* Staggered left slide in animation class */
+        .animate-stagger-left {
+            animation: staggerSlideLeft 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        /* Center Product Display Canvas / Blueprint */
+        .center-product-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .product-image-stage {
+            position: relative;
+            width: 100%;
+            max-width: 440px;
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .product-image-stage {
+                height: 300px;
+                max-width: 320px;
+            }
+        }
+
+        /* Blueprint graphic styling with 2 o'clock rotation transition */
+        .product-blueprint-svg {
+            width: 100%;
+            height: 100%;
+            max-height: 360px;
+            object-fit: contain;
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center center;
+        }
+
+        /* 2 o'clock rotation animation state when switching products */
+        .product-blueprint-svg.entering-2oclock {
+            opacity: 0;
+            transform: rotate(14deg) scale(0.92) translateY(12px);
+        }
+
+        .product-blueprint-svg.rendered {
+            opacity: 1;
+            transform: rotate(0deg) scale(1) translateY(0);
+        }
+
+        /* Mobile Chevrons */
+        .mobile-nav-arrow {
+            display: none;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav-arrow {
+                display: flex;
+            }
+            .mobile-nav-arrow.left { left: -10px; }
+            .mobile-nav-arrow.right { right: -10px; }
+        }
+
+        /* Right Product Info Details Panel */
+        .product-info-panel {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+            gap: 16px;
+            
+        }
+
+        @media (max-width: 768px) {
+            .product-info-panel {
+                text-align: center;
+                align-items: center;
+                margin-top: 16px;
+                gap: 12px;
+                width: 70vw;
+            }
+            .center-product-display {
+              max-height: 240px;
+            }
+        }
+
+        /* TEXT MASKING & CEILING ANIMATION CONTAINERS */
+        .text-mask-container {
+            overflow: hidden;
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            div#pSpecs {
+    display: none;
+}
+        }
+
+        /* Individual animatable text lines */
+        .text-animatable {
+            display: inline-block;
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s ease;
+            will-change: transform, opacity;
+        }
+
+        /* Former text goes UP and slides under ceiling mask */
+        .text-animatable.anim-exit-up {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        /* Instant reposition to bottom floor mask without transition */
+        .text-animatable.anim-prepare-down {
+            transform: translateY(100%);
+            opacity: 0;
+            transition: none !important;
+        }
+
+        /* New text comes UP from bottom floor mask into view */
+        .text-animatable.anim-enter-up {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .product-tag {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--bno-black);
+        }
+
+        .product-title {
+            font-size: 32px;
+            font-weight: 400;
+            line-height: 40px;
+            letter-spacing: -0.5px;
+            color: var(--bno-black);
+        }
+
+        @media (max-width: 768px) {
+            .product-title {
+                font-size: 18px;
+                line-height: 28px;
+            }
+        }
+
+        .product-price {
+            font-size: 13px;
+            color: var(--bno-grey);
+            font-weight: 400;
+        }
+
+        .product-page-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--bno-black);
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            font-weight: 400;
+            transition: opacity 0.2s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            width: fit-content;
+        }
+
+        .product-page-link:hover {
+            opacity: 0.7;
+        }
+
+        /* Dimension Spec Table */
+        .specs-grid {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--bno-grey);
+            line-height: 18px;
+        }
+
+        .spec-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .spec-label {
+            width: 16px;
+            color: var(--bno-grey);
+        }
+
+        .spec-value {
+            color: var(--bno-black);
+            font-weight: 400;
+        }
+
+        /* Bottom Center Action Button Bar */
+        .selection-footer-action {
+            position: fixed;
+            bottom: 40px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .selection-footer-action {
+                bottom: 24px;
+                padding: 0 20px;
+                justify-content: space-between;
+            }
+        }
+
+        .mobile-view-all {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--bno-black);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-view-all {
+                display: flex;
+            }
+        }
+
+        /* Keyframe Animations */
+        @keyframes slowSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slowSlideUpExit {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+        }
+
+        @keyframes growPill {
+            0% {
+                opacity: 0;
+                transform: scale(0.65);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes staggerSlideLeft {
+            0% {
+                opacity: 0.4;
+                transform: translateX(-100px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Architectural Grid Lines Overlay -->
+        <div class="grid-lines-overlay" id="gridLines">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+        </div>
+
+        <!-- Video Background -->
+        <div class="video-container" id="videoContainer">
+            <video class="video-bg" id="mainVideo" autoplay loop muted playsinline poster="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'><rect fill='%23fafafa'/></svg>">
+                <source src="https://videos.ctfassets.net/i3whj0ppsoot/1heobWjKoGxHN2O1vxHLbp/2d3bbfa84cb002bf807cd4e7f6228979/Intro_Loop_Video_-_Web.mp4" type="video/mp4">
+                Your browser does not support video playback.
+            </video>
+        </div>
+
+        <!-- Global Header Navigation -->
+        <header class="header-nav">
+            <div>
+                <a id="navBackBtn" class="back-link interactive-element" aria-label="Back link">
+                    <div class="back-circle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </div>
+                    <span id="backText" class="hidden md:inline-block">Back to Bang & Olufsen</span>
+                </a>
+            </div>
+
+            <div class="brand-title">
+                Bang & Olufsen
+            </div>
+
+            <div class="account-wrapper interactive-element">
+                <button class="account-icon-btn" aria-label="My Account">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </button>
+                <span class="account-tooltip">My account</span>
+            </div>
+        </header>
+
+        <!-- VIEW 1: LANDING PAGE -->
+        <div class="landing-view" id="landingView">
+            <div class="middle-spacer"></div>
+
+            <main class="content-container">
+                <h1 class="composer-title animate-title-in" id="landingTitle">The Composer</h1>
+                <p class="composer-subtitle animate-subtitle-in" id="landingSubtitle">Get ready for a world of creativity and beautiful sound</p>
+                
+                <div class="btn-wrapper animate-btn-in interactive-element" id="landingBtnWrapper">
+                    <button class="bno-pill-btn" id="enterBtn">
+                        Enter
+                    </button>
+                </div>
+            </main>
+        </div>
+
+        <!-- VIEW 2: PRODUCT SELECTION PAGE -->
+        <div class="selection-view" id="selectionView">
+            <h2 class="selection-header-title" id="selectionHeaderTitle">Please select your product</h2>
+
+            <div class="selection-main-grid">
+                <!-- Left Sidebar Navigation (Dynamic Categories with ul/li elements) -->
+                <aside class="sidebar-nav" id="sidebarNav">
+                    <!-- Dynamic Javascript population using proper <ul> and <li> -->
+                </aside>
+
+                <!-- Center Product Blueprint Sketch Visualizer -->
+                <div class="center-product-display">
+                    <button class="mobile-nav-arrow left interactive-element" id="prevProductBtn" aria-label="Previous product">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+
+                    <div class="product-image-stage">
+                        <div id="blueprintContainer" class="w-full h-full flex items-center justify-center">
+                            <!-- SVG Blueprint dynamic inject -->
+                        </div>
+                    </div>
+
+                    <button class="mobile-nav-arrow right interactive-element" id="nextProductBtn" aria-label="Next product">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
+                <!-- Right Side Product Detail Specs (Wrapped in Ceiling/Container Text Masks) -->
+                <div class="product-info-panel" id="productInfoPanel">
+                    <div class="text-mask-container">
+                        <div class="product-tag text-animatable anim-enter-up" id="pTag">BEOLAB 8</div>
+                    </div>
+
+                    <div class="text-mask-container">
+                        <h1 class="product-title text-animatable anim-enter-up" id="pTitle">Compact, powerful and versatile speakers</h1>
+                    </div>
+
+                    <div class="text-mask-container">
+                        <div class="product-price text-animatable anim-enter-up" id="pPrice">From 7,900 USD / set</div>
+                    </div>
+
+                    <div class="text-mask-container">
+                        <a href="#" class="product-page-link interactive-element text-animatable anim-enter-up" id="pLink">
+                            <span>View product page</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+
+                    <div class="text-mask-container">
+                        <div class="specs-grid text-animatable anim-enter-up" id="pSpecs">
+                            <div class="spec-row"><span class="spec-label">W</span><span class="spec-value" id="specW">16 CM</span></div>
+                            <div class="spec-row"><span class="spec-label">H</span><span class="spec-value" id="specH">17 CM</span></div>
+                            <div class="spec-row"><span class="spec-label">D</span><span class="spec-value" id="specD">29 CM</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Bottom Action Bar -->
+            <div class="selection-footer-action">
+                <button class="mobile-view-all interactive-element" id="mobileViewAllBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="5" cy="5" r="2"/><circle cx="12" cy="5" r="2"/><circle cx="19" cy="5" r="2"/>
+                        <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+                    </svg>
+                    <span>View all</span>
+                </button>
+
+                <div class="btn-wrapper animate-btn-in interactive-element" id="composeBtnWrapper">
+                    <button class="bno-pill-btn" id="startComposingBtn">
+                        Start composing
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Data and Application Logic -->
+    <script>
+        // JSON Dataset containing product definitions and SVG technical line drawings
+        const PRODUCTS_DATA = [
+            {
+                id: 'beolab-8',
+                category: 'SPEAKERS',
+                tag: 'BEOLAB 8',
+                name: 'Beolab 8',
+                title: 'Compact, powerful and versatile speakers',
+                price: 'From 7,900 USD / set',
+                dimensions: { w: '16 CM', h: '17 CM', d: '29 CM' },
+                svg: `<svg viewBox="0 0 400 360" class="product-blueprint-svg" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#191817" stroke-width="0.8" fill="none" opacity="0.85">
+                            <!-- Technical Grid Axis Lines -->
+                            <line x1="30" y1="180" x2="370" y2="180" stroke-dasharray="2 3" stroke="#ccc"/>
+                            <line x1="120" y1="20" x2="120" y2="340" stroke-dasharray="2 3" stroke="#ccc"/>
+                            <line x1="280" y1="20" x2="280" y2="340" stroke-dasharray="2 3" stroke="#ccc"/>
+
+                            <!-- Left Speaker -->
+                            <ellipse cx="120" cy="170" rx="42" ry="78" stroke-width="1.2"/>
+                            <path d="M78 170 L78 230 Q78 270 120 270 Q162 270 162 230 L162 170" stroke-width="1.2"/>
+                            <ellipse cx="120" cy="270" rx="42" ry="8"/>
+                            <path d="M100 270 L100 295 A20 6 0 0 0 140 295 L140 270"/>
+                            <ellipse cx="120" cy="295" rx="30" ry="5"/>
+                            <!-- Vertical Ribs -->
+                            <line x1="90" y1="170" x2="90" y2="250"/>
+                            <line x1="102" y1="170" x2="102" y2="264"/>
+                            <line x1="114" y1="170" x2="114" y2="268"/>
+                            <line x1="126" y1="170" x2="126" y2="268"/>
+                            <line x1="138" y1="170" x2="138" y2="264"/>
+                            <line x1="150" y1="170" x2="150" y2="250"/>
+
+                            <!-- Right Speaker -->
+                            <ellipse cx="280" cy="170" rx="42" ry="78" stroke-width="1.2"/>
+                            <path d="M238 170 L238 230 Q238 270 280 270 Q322 270 322 230 L322 170" stroke-width="1.2"/>
+                            <ellipse cx="280" cy="270" rx="42" ry="8"/>
+                            <path d="M260 270 L260 295 A20 6 0 0 0 300 295 L300 270"/>
+                            <ellipse cx="280" cy="295" rx="30" ry="5"/>
+                            <!-- Vertical Ribs -->
+                            <line x1="250" y1="170" x2="250" y2="250"/>
+                            <line x1="262" y1="170" x2="262" y2="264"/>
+                            <line x1="274" y1="170" x2="274" y2="268"/>
+                            <line x1="286" y1="170" x2="286" y2="268"/>
+                            <line x1="298" y1="170" x2="298" y2="264"/>
+                            <line x1="310" y1="170" x2="310" y2="250"/>
+                        </g>
+                    </svg>`
+            },
+            {
+                id: 'beolab-28',
+                category: 'SPEAKERS',
+                tag: 'BEOLAB 28',
+                name: 'Beolab 28',
+                title: 'Slim hi-res wireless stereo speakers',
+                price: 'From 16,500 USD / set',
+                dimensions: { w: '25 CM', h: '104 CM', d: '25 CM' },
+                svg: `<svg viewBox="0 0 400 360" class="product-blueprint-svg" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#191817" stroke-width="0.8" fill="none" opacity="0.85">
+                            <line x1="130" y1="10" x2="130" y2="350" stroke-dasharray="2 3" stroke="#ccc"/>
+                            <line x1="270" y1="10" x2="270" y2="350" stroke-dasharray="2 3" stroke="#ccc"/>
+
+                            <!-- Left Slim Pillar -->
+                            <rect x="110" y="40" width="40" height="230" rx="20" stroke-width="1.2"/>
+                            <ellipse cx="130" cy="40" rx="20" ry="6"/>
+                            <ellipse cx="130" cy="160" rx="20" ry="4"/>
+                            <path d="M115 270 L110 320 L150 320 L145 270"/>
+                            <ellipse cx="130" cy="320" rx="25" ry="6"/>
+
+                            <!-- Right Slim Pillar -->
+                            <rect x="250" y="40" width="40" height="230" rx="20" stroke-width="1.2"/>
+                            <ellipse cx="270" cy="40" rx="20" ry="6"/>
+                            <ellipse cx="270" cy="160" rx="20" ry="4"/>
+                            <path d="M255 270 L250 320 L290 320 L285 270"/>
+                            <ellipse cx="270" cy="320" rx="25" ry="6"/>
+                        </g>
+                    </svg>`
+            },
+            {
+                id: 'beolab-50',
+                category: 'SPEAKERS',
+                tag: 'BEOLAB 50',
+                name: 'Beolab 50',
+                title: 'Floor speakers totally re-imagined',
+                price: 'From 79,800 USD / set',
+                dimensions: { w: '46 CM', h: '109 CM', d: '46 CM' },
+                svg: `<svg viewBox="0 0 400 360" class="product-blueprint-svg" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#191817" stroke-width="0.8" fill="none" opacity="0.85">
+                            <line x1="120" y1="20" x2="120" y2="340" stroke-dasharray="2 3" stroke="#ccc"/>
+                            <line x1="280" y1="20" x2="280" y2="340" stroke-dasharray="2 3" stroke="#ccc"/>
+                            <!-- Outer Contour Left -->
+                            <path d="M80 80 Q120 70 160 80 L165 240 Q120 280 75 240 Z" stroke-width="1.2"/>
+                            <ellipse cx="120" cy="80" rx="40" ry="10"/>
+                            <path d="M90 80 L95 240"/>
+                            <path d="M150 80 L145 240"/>
+
+                            <!-- Outer Contour Right -->
+                            <path d="M240 80 Q280 70 320 80 L325 240 Q280 280 235 240 Z" stroke-width="1.2"/>
+                            <ellipse cx="280" cy="80" rx="40" ry="10"/>
+                            <path d="M250 80 L255 240"/>
+                            <path d="M310 80 L305 240"/>
+                        </g>
+                    </svg>`
+            },
+            {
+                id: 'beolab-90',
+                category: 'SPEAKERS',
+                tag: 'BEOLAB 90',
+                name: 'Beolab 90',
+                title: 'Unprecedented power and acoustic precision',
+                price: 'From 135,000 USD / set',
+                dimensions: { w: '73.5 CM', h: '125.3 CM', d: '74.7 CM' },
+                svg: `<svg viewBox="0 0 400 360" class="product-blueprint-svg" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#191817" stroke-width="0.8" fill="none" opacity="0.85">
+                            <line x1="200" y1="10" x2="200" y2="350" stroke-dasharray="2 3" stroke="#ccc"/>
+                            <!-- Geometric Polygon Structure -->
+                            <polygon points="200,30 270,90 290,200 240,310 160,310 110,200 130,90" stroke-width="1.4"/>
+                            <line x1="200" y1="30" x2="200" y2="310"/>
+                            <line x1="130" y1="90" x2="270" y2="90"/>
+                            <line x1="110" y1="200" x2="290" y2="200"/>
+                            <line x1="130" y1="90" x2="200" y2="200"/>
+                            <line x1="270" y1="90" x2="200" y2="200"/>
+                            <line x1="110" y1="200" x2="200" y2="310"/>
+                            <line x1="290" y1="200" x2="200" y2="310"/>
+                        </g>
+                    </svg>`
+            },
+            {
+                id: 'beovision-theatre',
+                category: 'TELEVISIONS',
+                tag: 'BEOVISION THEATRE',
+                name: 'Beovision Theatre',
+                title: 'A new era of cinematic vision & immersive sound',
+                price: 'From 10,900 USD',
+                dimensions: { w: '142 CM', h: '88 CM', d: '18 CM' },
+                svg: `<svg viewBox="0 0 400 360" class="product-blueprint-svg" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#191817" stroke-width="0.8" fill="none" opacity="0.85">
+                            <rect x="60" y="50" width="280" height="170" rx="4" stroke-width="1.2"/>
+                            <rect x="68" y="58" width="264" height="154" rx="2"/>
+                            <!-- Soundbar Base -->
+                            <path d="M40 235 L360 235 L340 270 L60 270 Z" stroke-width="1.2"/>
+                            <line x1="40" y1="245" x2="360" y2="245"/>
+                            <ellipse cx="200" cy="290" rx="80" ry="12"/>
+                        </g>
+                    </svg>`
+            },
+            {
+                id: 'beosound-premiere',
+                category: 'SOUNDBARS',
+                tag: 'BEOSOUND PREMIERE',
+                name: 'Beosound Premiere',
+                title: 'Sculptural soundbar with extraordinary bass',
+                price: 'From 4,950 USD',
+                dimensions: { w: '110 CM', h: '19 CM', d: '15 CM' },
+                svg: `<svg viewBox="0 0 400 360" class="product-blueprint-svg" xmlns="http://www.w3.org/2000/svg">
+                        <g stroke="#191817" stroke-width="0.8" fill="none" opacity="0.85">
+                            <rect x="40" y="150" width="320" height="60" rx="30" stroke-width="1.2"/>
+                            <line x1="70" y1="150" x2="70" y2="210"/>
+                            <line x1="330" y1="150" x2="330" y2="210"/>
+                            <circle cx="200" cy="180" r="18"/>
+                        </g>
+                    </svg>`
+            }
+        ];
+
+        // State Machine Manager
+        let currentView = 'landing'; // 'landing' | 'selection'
+        let currentProductIndex = 0;
+        let isChangingProduct = false;
+
+        // DOM Element Cache
+        const landingView = document.getElementById('landingView');
+        const selectionView = document.getElementById('selectionView');
+        const videoContainer = document.getElementById('videoContainer');
+        const mainVideo = document.getElementById('mainVideo');
+        const gridLines = document.getElementById('gridLines');
+
+        const landingTitle = document.getElementById('landingTitle');
+        const landingSubtitle = document.getElementById('landingSubtitle');
+        const landingBtnWrapper = document.getElementById('landingBtnWrapper');
+        const enterBtn = document.getElementById('enterBtn');
+
+        const navBackBtn = document.getElementById('navBackBtn');
+        const backText = document.getElementById('backText');
+
+        const sidebarNav = document.getElementById('sidebarNav');
+        const blueprintContainer = document.getElementById('blueprintContainer');
+        const selectionHeaderTitle = document.getElementById('selectionHeaderTitle');
+
+        const pTag = document.getElementById('pTag');
+        const pTitle = document.getElementById('pTitle');
+        const pPrice = document.getElementById('pPrice');
+        const specW = document.getElementById('specW');
+        const specH = document.getElementById('specH');
+        const specD = document.getElementById('specD');
+
+        const prevProductBtn = document.getElementById('prevProductBtn');
+        const nextProductBtn = document.getElementById('nextProductBtn');
+        const startComposingBtn = document.getElementById('startComposingBtn');
+
+        // Construct sidebar navigation with section headers and proper ul / li product elements
+        function buildSidebarMenu() {
+            sidebarNav.innerHTML = '';
+            
+            // Group items by category
+            const categories = {};
+            PRODUCTS_DATA.forEach((prod, idx) => {
+                if (!categories[prod.category]) {
+                    categories[prod.category] = [];
+                }
+                categories[prod.category].push({ ...prod, originalIndex: idx });
+            });
+
+            let globalStaggerIndex = 0;
+
+            Object.keys(categories).forEach(catName => {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'category-group';
+
+                // Product Section Title (eg: SPEAKERS)
+                const catHeader = document.createElement('div');
+                catHeader.className = 'category-label';
+                catHeader.textContent = catName;
+                catHeader.style.animationDelay = `${0.2 + globalStaggerIndex * 0.08}s`;
+                groupDiv.appendChild(catHeader);
+                globalStaggerIndex++;
+
+                // Unordered List <ul> element for sub-products
+                const ul = document.createElement('ul');
+                ul.className = 'product-list';
+
+                categories[catName].forEach(prod => {
+                    const li = document.createElement('li');
+                    li.className = 'product-list-item';
+
+                    const btn = document.createElement('button');
+                    btn.className = `product-item-btn ${prod.originalIndex === currentProductIndex ? 'active' : ''}`;
+                    btn.textContent = prod.name;
+                    btn.style.animationDelay = `${0.2 + globalStaggerIndex * 0.08}s`;
+                    btn.setAttribute('data-index', prod.originalIndex);
+
+                    btn.addEventListener('click', () => {
+                        selectProduct(prod.originalIndex);
+                    });
+
+                    li.appendChild(btn);
+                    ul.appendChild(li);
+                    globalStaggerIndex++;
+                });
+
+                groupDiv.appendChild(ul);
+                sidebarNav.appendChild(groupDiv);
+            });
+        }
+
+        // Product Switcher Controller
+        function selectProduct(index) {
+            if (index < 0 || index >= PRODUCTS_DATA.length || isChangingProduct) return;
+            if (index === currentProductIndex && blueprintContainer.querySelector('.product-blueprint-svg')) return;
+
+            isChangingProduct = true;
+            currentProductIndex = index;
+            const product = PRODUCTS_DATA[index];
+
+            // Update active state in sidebar
+            const buttons = sidebarNav.querySelectorAll('.product-item-btn');
+            buttons.forEach(b => {
+                if (parseInt(b.getAttribute('data-index')) === index) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+
+            // 1. 2 o'clock Rotation & Fade transition for Product Blueprint Graphic
+            const currentSvg = blueprintContainer.querySelector('.product-blueprint-svg');
+            if (currentSvg) {
+                currentSvg.classList.remove('rendered');
+                currentSvg.classList.add('entering-2oclock');
+                setTimeout(() => {
+                    renderProductGraphic(product);
+                }, 350);
+            } else {
+                renderProductGraphic(product);
+            }
+
+            // 2. Ceiling Masked Vertical Slide Text Transition
+            animateTextChange(product);
+        }
+
+        function renderProductGraphic(product) {
+            blueprintContainer.innerHTML = product.svg;
+            const newSvg = blueprintContainer.querySelector('.product-blueprint-svg');
+            newSvg.classList.add('entering-2oclock');
+            
+            // Force reflow
+            void newSvg.offsetWidth;
+            
+            setTimeout(() => {
+                newSvg.classList.remove('entering-2oclock');
+                newSvg.classList.add('rendered');
+            }, 50);
+        }
+
+        // Vertical Text Mask Animation: Former text slides UP under top ceiling, new text enters UP from bottom floor
+        function animateTextChange(product) {
+            const textElements = document.querySelectorAll('.text-animatable');
+
+            // Phase 1: Animate outgoing text UP towards the top ceiling boundary
+            textElements.forEach((el, idx) => {
+                el.style.transitionDelay = `${idx * 0.03}s`;
+                el.classList.remove('anim-enter-up', 'anim-prepare-down');
+                el.classList.add('anim-exit-up');
+            });
+
+            // Phase 2: Once former text is clipped under ceiling mask, update content and position new text below floor mask
+            setTimeout(() => {
+                pTag.textContent = product.tag;
+                pTitle.textContent = product.title;
+                pPrice.textContent = product.price;
+                specW.textContent = product.dimensions.w;
+                specH.textContent = product.dimensions.h;
+                specD.textContent = product.dimensions.d;
+
+                textElements.forEach((el) => {
+                    el.style.transitionDelay = '0s';
+                    el.classList.remove('anim-exit-up');
+                    el.classList.add('anim-prepare-down'); // translateY(100%) instantly
+                });
+
+                // Force reflow
+                void document.body.offsetHeight;
+
+                // Phase 3: Animate incoming text UP from bottom floor into full view
+                textElements.forEach((el, idx) => {
+                    el.style.transitionDelay = `${idx * 0.05}s`;
+                    el.classList.remove('anim-prepare-down');
+                    el.classList.add('anim-enter-up');
+                });
+
+                setTimeout(() => {
+                    isChangingProduct = false;
+                }, 450);
+            }, 350);
+        }
+
+        function transitionToSelection() {
+            currentView = 'selection';
+
+            // 1. Animate landing elements upwards and fade out
+            landingTitle.classList.remove('animate-title-in');
+            landingSubtitle.classList.remove('animate-subtitle-in');
+            landingBtnWrapper.classList.remove('animate-btn-in');
+
+            landingTitle.classList.add('animate-exit-up');
+            landingSubtitle.classList.add('animate-exit-up');
+            landingBtnWrapper.classList.add('animate-exit-up');
+
+            // Fade video background to white grid background
+            videoContainer.style.opacity = '0';
+            gridLines.style.opacity = '1';
+
+            // Change header back link text
+            backText.textContent = 'Back';
+
+            setTimeout(() => {
+                landingView.style.display = 'none';
+                selectionView.classList.add('active');
+
+                // Animate Header title inside Selection
+                selectionHeaderTitle.classList.add('animate-in');
+
+                // Build sidebar and trigger staggered animations
+                buildSidebarMenu();
+                const staggerItems = sidebarNav.querySelectorAll('.category-label, .product-item-btn');
+                staggerItems.forEach(item => {
+                    item.classList.add('animate-stagger-left');
+                });
+
+                // Render current active product
+                renderProductGraphic(PRODUCTS_DATA[currentProductIndex]);
+            }, 600);
+        }
+
+        function transitionToLanding() {
+            currentView = 'landing';
+
+            // Hide Selection View
+            selectionView.classList.remove('active');
+            selectionHeaderTitle.classList.remove('animate-in');
+
+            // Bring back Video & hide Grid overlay smoothly
+            videoContainer.style.opacity = '1';
+            gridLines.style.opacity = '0';
+
+            // Reset back link text
+            backText.textContent = 'Back to Bang & Olufsen';
+
+            setTimeout(() => {
+                landingView.style.display = 'flex';
+                
+                // Reset landing exit animation classes
+                landingTitle.classList.remove('animate-exit-up');
+                landingSubtitle.classList.remove('animate-exit-up');
+                landingBtnWrapper.classList.remove('animate-exit-up');
+
+                // Trigger fresh entry animations
+                landingTitle.classList.add('animate-title-in');
+                landingSubtitle.classList.add('animate-subtitle-in');
+                landingBtnWrapper.classList.add('animate-btn-in');
+            }, 300);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Video Autoplay Guardrail for Mobile Browsers
+            if (mainVideo) {
+                mainVideo.muted = true;
+                mainVideo.play().catch(err => {
+                    console.log('Autoplay prevented:', err);
+                });
+            }
+
+            // Click Enter Button
+            enterBtn.addEventListener('click', () => {
+                transitionToSelection();
+            });
+
+            // Click Back Navigation Button
+            navBackBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (currentView === 'selection') {
+                    transitionToLanding();
+                }
+            });
+
+            // Mobile Previous & Next Chevrons
+            prevProductBtn.addEventListener('click', () => {
+                let nextIdx = currentProductIndex - 1;
+                if (nextIdx < 0) nextIdx = PRODUCTS_DATA.length - 1;
+                selectProduct(nextIdx);
+            });
+
+            nextProductBtn.addEventListener('click', () => {
+                let nextIdx = currentProductIndex + 1;
+                if (nextIdx >= PRODUCTS_DATA.length) nextIdx = 0;
+                selectProduct(nextIdx);
+            });
+
+            // Start Composing Button Action
+            startComposingBtn.addEventListener('click', () => {
+                console.log('Composing initialized for:', PRODUCTS_DATA[currentProductIndex].name);
+            });
+        });
+    </script>
+</body>
+</html>
