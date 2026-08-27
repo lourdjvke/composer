@@ -1768,7 +1768,7 @@
             </div>
 
             <div class="brand-title">
-                Bang & Olufsen
+                <img src="https://i.ibb.co/rKf15ptT/OMSX-GROUP-LOGO.png" width="60px">
             </div>
 
             <div class="account-wrapper interactive-element">
@@ -2326,6 +2326,405 @@
         const detPrice = document.getElementById('detPrice');
         const detActionBtns = document.getElementById('detActionBtns');
         const inspireFooter = document.getElementById('inspireFooter');
+        const btnCompose = document.getElementById('btnCompose');
+        const btnQuickCompose = document.getElementById('btnQuickCompose');
+
+        // Draw-over Loader & Customizer Stage Elements
+        const drawOverLoader = document.getElementById('drawOverLoader');
+        const customizerView = document.getElementById('customizerView');
+        const custBackBtn = document.getElementById('custBackBtn');
+        const custProfileBtn = document.getElementById('custProfileBtn');
+        const custLeftCatList = document.getElementById('custLeftCatList');
+        const custCategoryTabs = document.getElementById('custCategoryTabs');
+        const custOptionsContainer = document.getElementById('custOptionsContainer');
+        const custOptionsList = document.getElementById('custOptionsList');
+        const custSvgStage = document.getElementById('custSvgStage');
+        const custMainSvg = document.getElementById('custMainSvg');
+        const svgGarmentBody = document.getElementById('svgGarmentBody');
+        const svgTextureRect = document.getElementById('svgTextureRect');
+        const svgPrintLayer = document.getElementById('svgPrintLayer');
+        const editPin1 = document.getElementById('editPin1');
+        const editPin2 = document.getElementById('editPin2');
+        const toggleRotation = document.getElementById('toggleRotation');
+        const switchRotation = document.getElementById('switchRotation');
+        const toggleZoom = document.getElementById('toggleZoom');
+        const switchZoom = document.getElementById('switchZoom');
+        const mobileMoreOptions = document.getElementById('mobileMoreOptions');
+        const custEstTotalText = document.getElementById('custEstTotalText');
+        const custDoneBtn = document.getElementById('custDoneBtn');
+        const custToast = document.getElementById('custToast');
+        const custToastText = document.getElementById('custToastText');
+
+        // Customizer Config & Data
+        const CUSTOMIZER_DATA = {
+            categories: ['MATERIAL', 'COLOR', 'FIT', 'PRINT'],
+            options: {
+                'MATERIAL': [
+                    { id: 'mat-fleece', name: 'Soft Fabric / Fleece', texture: 'none', basePrice: 48, stroke: '#191817' },
+                    { id: 'mat-smooth', name: 'Smooth Finish', texture: 'none', basePrice: 42, stroke: '#191817' },
+                    { id: 'mat-knit', name: 'Heavy Knit Wool', texture: 'url(#knitPattern)', basePrice: 68, stroke: '#191817' },
+                    { id: 'mat-nylon', name: 'Technical Nylon', texture: 'none', basePrice: 56, stroke: '#191817' },
+                    { id: 'mat-cashmere', name: 'Cashmere Blend', texture: 'none', basePrice: 94, stroke: '#191817' }
+                ],
+                'COLOR': [
+                    { id: 'col-natural', name: 'Natural', value: '#e8e8e8', signature: true, isDark: false },
+                    { id: 'col-black', name: 'Black Anthracite', value: '#242424', signature: true, isDark: true },
+                    { id: 'col-gold', name: 'Gold Tone', value: '#d4af37', signature: true, isDark: false },
+                    { id: 'col-bronze', name: 'Bronze Tone', value: '#cd7f32', signature: false, isDark: false },
+                    { id: 'col-chestnut', name: 'Chestnut Brown', value: '#5c4033', signature: false, isDark: true },
+                    { id: 'col-bitter', name: 'Bitter Orange', value: '#d95030', signature: false, isDark: false },
+                    { id: 'col-zesty', name: 'Zesty Orange', value: '#ff9900', signature: false, isDark: false },
+                    { id: 'col-radiant', name: 'Radiant Red', value: '#cc0000', signature: false, isDark: false },
+                    { id: 'col-lime', name: 'Lime Green', value: '#32cd32', signature: false, isDark: false },
+                    { id: 'col-navy', name: 'Navy Blue', value: '#1a2b4c', signature: false, isDark: true }
+                ],
+                'FIT': [
+                    { id: 'fit-standard', name: 'Standard', scale: 1.0 },
+                    { id: 'fit-compact', name: 'Compact Fit', scale: 0.9 },
+                    { id: 'fit-relaxed', name: 'Relaxed Oversized', scale: 1.08 },
+                    { id: 'fit-cropped', name: 'Cropped Silhouette', scale: 0.95 },
+                    { id: 'fit-longline', name: 'Longline Profile', scale: 1.12 }
+                ],
+                'PRINT': [
+                    { id: 'print-allover', name: 'All-over', type: 'polka' },
+                    { id: 'print-blank', name: 'Blank', type: 'none' },
+                    { id: 'print-centre', name: 'Centre Logo', type: 'centre-logo' },
+                    { id: 'print-chest', name: 'Left Chest', type: 'chest-logo' }
+                ]
+            }
+        };
+
+        let custActiveCategory = 'COLOR';
+        let custSelections = {
+            'MATERIAL': CUSTOMIZER_DATA.options['MATERIAL'][0],
+            'COLOR': CUSTOMIZER_DATA.options['COLOR'][0],
+            'FIT': CUSTOMIZER_DATA.options['FIT'][0],
+            'PRINT': CUSTOMIZER_DATA.options['PRINT'][0]
+        };
+        let isRotated = false;
+        let isZoomed = false;
+
+        // Render Left Desktop Categories
+        function renderCustLeftCategories() {
+            if (!custLeftCatList) return;
+            custLeftCatList.innerHTML = '';
+            CUSTOMIZER_DATA.categories.forEach((cat, idx) => {
+                const item = document.createElement('div');
+                const isActive = cat === custActiveCategory;
+                item.className = `cust-left-cat-item ${isActive ? 'active' : ''}`;
+                item.textContent = cat;
+                item.onclick = () => {
+                    custActiveCategory = cat;
+                    renderCustLeftCategories();
+                    renderCustTabs();
+                    renderCustOptions(true);
+                };
+                custLeftCatList.appendChild(item);
+            });
+        }
+
+        // Render Top Right Category Tabs
+        function renderCustTabs() {
+            if (!custCategoryTabs) return;
+            custCategoryTabs.innerHTML = '';
+            CUSTOMIZER_DATA.categories.forEach(cat => {
+                const btn = document.createElement('button');
+                const isActive = cat === custActiveCategory;
+                btn.className = `cust-tab-btn ${isActive ? 'active' : ''}`;
+                btn.textContent = cat;
+
+                if (isActive) {
+                    const underline = document.createElement('div');
+                    underline.className = 'cust-tab-underline';
+                    btn.appendChild(underline);
+                }
+
+                btn.onclick = () => {
+                    custActiveCategory = cat;
+                    renderCustLeftCategories();
+                    renderCustTabs();
+                    renderCustOptions(true);
+                };
+                custCategoryTabs.appendChild(btn);
+            });
+        }
+
+        // Render Options with Staggered Slide-In
+        function renderCustOptions(withAnimation = true) {
+            if (!custOptionsList) return;
+            custOptionsList.innerHTML = '';
+            const options = CUSTOMIZER_DATA.options[custActiveCategory];
+            const currentSelected = custSelections[custActiveCategory];
+
+            options.forEach((opt, idx) => {
+                const li = document.createElement('li');
+                const isActive = opt.id === currentSelected.id;
+                li.className = `cust-opt-item ${isActive ? 'active' : ''}`;
+                li.id = `cust-opt-${opt.id}`;
+
+                let badgeHtml = '';
+                if (custActiveCategory === 'COLOR' && opt.signature) {
+                    badgeHtml = `<div class="cust-opt-badge">SIGNATURE</div>`;
+                }
+
+                li.innerHTML = `
+                    <span class="cust-opt-name">${opt.name}</span>
+                    ${badgeHtml}
+                    <div class="cust-opt-indicator"></div>
+                `;
+
+                li.onclick = () => {
+                    custSelections[custActiveCategory] = opt;
+                    renderCustOptions(false);
+                    updateCustomizerVisual();
+                };
+
+                custOptionsList.appendChild(li);
+
+                if (withAnimation) {
+                    setTimeout(() => {
+                        li.classList.add('stagger-slide-in');
+                    }, 40 + idx * 45);
+                } else {
+                    li.classList.add('stagger-slide-in');
+                }
+            });
+
+            if (withAnimation && custOptionsContainer) {
+                custOptionsContainer.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // Animate Left Categories Slide-in
+        function triggerLeftCategoriesStagger() {
+            if (!custLeftCatList) return;
+            const items = custLeftCatList.querySelectorAll('.cust-left-cat-item');
+            items.forEach((item, idx) => {
+                item.classList.remove('stagger-slide-in');
+                setTimeout(() => {
+                    item.classList.add('stagger-slide-in');
+                }, 80 + idx * 60);
+            });
+        }
+
+        // Update Interactive SVG Garment Visual
+        function updateCustomizerVisual() {
+            const colorOpt = custSelections['COLOR'];
+            const materialOpt = custSelections['MATERIAL'];
+            const fitOpt = custSelections['FIT'];
+            const printOpt = custSelections['PRINT'];
+
+            // 1. Color update
+            if (svgGarmentBody) {
+                svgGarmentBody.setAttribute('fill', colorOpt.value);
+                if (colorOpt.isDark) {
+                    svgGarmentBody.setAttribute('stroke', 'rgba(255, 255, 255, 0.4)');
+                    const seams = document.getElementById('svgSeamLines');
+                    if (seams) {
+                        seams.setAttribute('stroke', '#ffffff');
+                        seams.setAttribute('opacity', '0.45');
+                    }
+                } else {
+                    svgGarmentBody.setAttribute('stroke', '#191817');
+                    const seams = document.getElementById('svgSeamLines');
+                    if (seams) {
+                        seams.setAttribute('stroke', '#191817');
+                        seams.setAttribute('opacity', '0.65');
+                    }
+                }
+            }
+
+            // 2. Texture / Material update
+            if (svgTextureRect) {
+                svgTextureRect.setAttribute('fill', materialOpt.texture || 'transparent');
+            }
+
+            // 3. Fit scale update
+            if (custMainSvg) {
+                custMainSvg.style.transform = `scale(${fitOpt.scale || 1.0})`;
+            }
+
+            // 4. Print / Pattern layer update
+            if (svgPrintLayer) {
+                svgPrintLayer.innerHTML = '';
+                const isDark = colorOpt.isDark;
+                const printColor = isDark ? '#ffffff' : '#000000';
+                const printOpacity = isDark ? '0.2' : '0.15';
+
+                if (printOpt.type === 'polka') {
+                    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    rect.setAttribute('x', '0');
+                    rect.setAttribute('y', '0');
+                    rect.setAttribute('width', '340');
+                    rect.setAttribute('height', '340');
+                    rect.setAttribute('fill', 'url(#polkaPattern)');
+                    svgPrintLayer.appendChild(rect);
+                } else if (printOpt.type === 'centre-logo') {
+                    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    g.setAttribute('transform', 'translate(167, 195)');
+                    g.setAttribute('text-anchor', 'middle');
+                    g.innerHTML = `
+                        <circle cx="0" cy="0" r="24" fill="none" stroke="${printColor}" stroke-width="1.5" opacity="${printOpacity}"/>
+                        <text x="0" y="5" font-family="'Inter', sans-serif" font-size="12" font-weight="600" fill="${printColor}" opacity="${printOpacity * 2}">B&O</text>
+                    `;
+                    svgPrintLayer.appendChild(g);
+                } else if (printOpt.type === 'chest-logo') {
+                    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                    g.setAttribute('transform', 'translate(125, 140)');
+                    g.setAttribute('text-anchor', 'middle');
+                    g.innerHTML = `
+                        <circle cx="0" cy="0" r="14" fill="none" stroke="${printColor}" stroke-width="1.2" opacity="${printOpacity}"/>
+                        <text x="0" y="3.5" font-family="'Inter', sans-serif" font-size="7" font-weight="600" fill="${printColor}" opacity="${printOpacity * 2}">B&O</text>
+                    `;
+                    svgPrintLayer.appendChild(g);
+                }
+            }
+
+            // 5. Update Dynamic Price Summary
+            if (custEstTotalText) {
+                let total = materialOpt.basePrice || 48;
+                if (printOpt.type === 'polka') total += 28;
+                if (printOpt.type === 'centre-logo') total += 16;
+                if (printOpt.type === 'chest-logo') total += 12;
+                if (colorOpt.signature) total += 8;
+                custEstTotalText.textContent = `Est. total ${total} USD`;
+            }
+        }
+
+        // Toggle Rotation Perspective
+        function handleToggleRotation() {
+            isRotated = !isRotated;
+            if (switchRotation) {
+                switchRotation.classList.toggle('on', isRotated);
+            }
+            if (custSvgStage) {
+                custSvgStage.classList.toggle('rotated', isRotated);
+            }
+        }
+
+        // Toggle Zoom Scale
+        function handleToggleZoom() {
+            isZoomed = !isZoomed;
+            if (switchZoom) {
+                switchZoom.classList.toggle('on', isZoomed);
+            }
+            if (custSvgStage) {
+                custSvgStage.classList.toggle('zoomed', isZoomed);
+            }
+        }
+
+        // Toast Notification Handler
+        function showCustToast(msg) {
+            if (!custToast) return;
+            if (custToastText && msg) custToastText.textContent = msg;
+            custToast.classList.add('show');
+            setTimeout(() => {
+                custToast.classList.remove('show');
+            }, 3200);
+        }
+
+        // Transition from Composing to Customizer (with Spinner -> 4s -> Draw-Over Loader -> Stage)
+        function startComposeFlow(buttonEl, originalHtml) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            // 1. Button content changes to a small spinner loader
+            if (buttonEl) {
+                buttonEl.disabled = true;
+                buttonEl.innerHTML = `<span class="btn-spinner"></span>`;
+            }
+            if (btnCompose && btnCompose !== buttonEl) btnCompose.disabled = true;
+            if (btnQuickCompose && btnQuickCompose !== buttonEl) btnQuickCompose.disabled = true;
+
+            // 2. Wait exactly 4 seconds
+            setTimeout(() => {
+                // 3. Reveal next stage via smooth clip path draw-over animation
+                if (drawOverLoader) {
+                    drawOverLoader.style.display = 'flex';
+                    void drawOverLoader.offsetWidth;
+                    drawOverLoader.classList.add('draw-active');
+                }
+
+                // 4. Properly hide composing view
+                setTimeout(() => {
+                    if (composingView) {
+                        composingView.style.display = 'none';
+                        composingView.classList.remove('active', 'phase-loading', 'phase-details');
+                    }
+                    if (detActionBtns) detActionBtns.classList.remove('enter');
+                    if (inspireFooter) inspireFooter.classList.remove('enter');
+
+                    // Reset button contents
+                    if (btnCompose) {
+                        btnCompose.disabled = false;
+                        btnCompose.innerHTML = `<span>Compose</span>`;
+                    }
+                    if (btnQuickCompose) {
+                        btnQuickCompose.disabled = false;
+                        btnQuickCompose.innerHTML = `<span>Quick compose</span>`;
+                    }
+
+                    // 5. After brief loader duration, reveal Customizer Stage
+                    setTimeout(() => {
+                        currentView = 'customizer';
+                        if (customizerView) {
+                            customizerView.style.display = 'flex';
+                            void customizerView.offsetWidth;
+                            customizerView.classList.add('active');
+                        }
+
+                        // Initialize Customizer Data & Visual
+                        renderCustLeftCategories();
+                        renderCustTabs();
+                        renderCustOptions(true);
+                        triggerLeftCategoriesStagger();
+                        updateCustomizerVisual();
+
+                        // Fade out intermediate loader
+                        if (drawOverLoader) {
+                            drawOverLoader.style.opacity = '0';
+                            setTimeout(() => {
+                                drawOverLoader.style.display = 'none';
+                                drawOverLoader.classList.remove('draw-active');
+                                drawOverLoader.style.opacity = '1';
+                                isTransitioning = false;
+                            }, 500);
+                        } else {
+                            isTransitioning = false;
+                        }
+
+                    }, 1600);
+
+                }, 900);
+
+            }, 4000);
+        }
+
+        // Transition from Customizer Back to Previous View
+        function transitionFromCustomizerToDetails() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            if (customizerView) {
+                customizerView.classList.remove('active');
+            }
+
+            setTimeout(() => {
+                if (customizerView) customizerView.style.display = 'none';
+
+                // Return to Composing Details phase
+                currentView = 'composing';
+                if (composingView) {
+                    composingView.style.display = 'flex';
+                    composingView.classList.remove('phase-loading');
+                    composingView.classList.add('phase-details', 'active');
+                }
+                if (detActionBtns) detActionBtns.classList.add('enter');
+                if (inspireFooter) inspireFooter.classList.add('enter');
+
+                isTransitioning = false;
+            }, 500);
+        }
 
         // Construct sidebar navigation with section headers and proper ul / li product elements
         function buildSidebarMenu() {
@@ -2780,6 +3179,83 @@
             skipCompBtn.addEventListener('click', () => {
                 goToDetailsPhase();
             });
+
+            // Compose and Quick Compose Button Actions (Trigger button spinner -> 4s -> draw-over loader -> Customizer)
+            if (btnCompose) {
+                btnCompose.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    startComposeFlow(btnCompose, 'Compose');
+                });
+            }
+
+            if (btnQuickCompose) {
+                btnQuickCompose.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    startComposeFlow(btnQuickCompose, 'Quick compose');
+                });
+            }
+
+            // Customizer Back Button
+            if (custBackBtn) {
+                custBackBtn.addEventListener('click', () => {
+                    transitionFromCustomizerToDetails();
+                });
+            }
+
+            // Customizer Edit Pins
+            if (editPin1) {
+                editPin1.addEventListener('click', () => {
+                    custActiveCategory = 'PRINT';
+                    renderCustLeftCategories();
+                    renderCustTabs();
+                    renderCustOptions(true);
+                });
+            }
+
+            if (editPin2) {
+                editPin2.addEventListener('click', () => {
+                    custActiveCategory = 'COLOR';
+                    renderCustLeftCategories();
+                    renderCustTabs();
+                    renderCustOptions(true);
+                });
+            }
+
+            // Rotation and Zoom Toggles
+            if (toggleRotation) {
+                toggleRotation.addEventListener('click', handleToggleRotation);
+            }
+
+            if (toggleZoom) {
+                toggleZoom.addEventListener('click', handleToggleZoom);
+            }
+
+            // Mobile More Options
+            if (mobileMoreOptions) {
+                mobileMoreOptions.addEventListener('click', () => {
+                    // Cycle through categories on mobile
+                    const currentIdx = CUSTOMIZER_DATA.categories.indexOf(custActiveCategory);
+                    const nextIdx = (currentIdx + 1) % CUSTOMIZER_DATA.categories.length;
+                    custActiveCategory = CUSTOMIZER_DATA.categories[nextIdx];
+                    renderCustLeftCategories();
+                    renderCustTabs();
+                    renderCustOptions(true);
+                });
+            }
+
+            // Customizer Done Button
+            if (custDoneBtn) {
+                custDoneBtn.addEventListener('click', () => {
+                    showCustToast('Bespoke customizer configuration saved');
+                });
+            }
+
+            // Customizer Profile Button
+            if (custProfileBtn) {
+                custProfileBtn.addEventListener('click', () => {
+                    showCustToast('Bespoke Member: Signed in as jvkechris@gmail.com');
+                });
+            }
         });
     </script>
 </body>
