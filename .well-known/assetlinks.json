@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.breacher.composer",
+        "sha256_cert_fingerprints": ["FB:06:78:1A:3A:7A:BB:36:DA:98:F2:D0:E8:2C:BD:DA:0F:80:6C:DE:3D:D6:A0:B2:E1:29:FD:A9:C5:11:8D:6A"]
+      }
+    }]
